@@ -1,5 +1,6 @@
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.FormKeys.SkyrimSE;
+using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Aspects;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
@@ -38,9 +39,27 @@ namespace SmartDisenchantEverything
                 )
                     continue;
 
+                // skip armor that is non-playable
+                if (item is IArmorGetter armorGetter && armorGetter.MajorFlags.HasFlag(Armor.MajorFlag.NonPlayable)) continue;
+
+                // skip weapon that is non-playable
+                if (item is IWeaponGetter weaponGetter && weaponGetter.MajorFlags.HasFlag(Weapon.MajorFlag.NonPlayable)) continue;
+
                 // check if item has keywords
                 if (item is not IKeywordedGetter itemKeywords || itemKeywords.Keywords == null)
                     continue;
+
+                // skip if item has blacklisted keywords
+                bool skip = false;
+                foreach (IFormLinkGetter<IKeywordGetter> itemKeyword in itemKeywords.Keywords)
+                {
+                    if (Settings.KywdBlacklist.Contains(itemKeyword))
+                    {
+                        skip = true;
+                        break;
+                    }
+                }
+                if (skip) continue;
 
                 // check if item has magic disallow enchanting keyword
                 if (!itemKeywords.Keywords.Contains(Skyrim.Keyword.MagicDisallowEnchanting))

@@ -27,5 +27,8 @@ namespace SmartDisenchantEverything
 
         [SynthesisSettingName("Blacklist items")]
         public List<IFormLinkGetter<IItemGetter>> ItemBlacklist { get; set; } = new();
+
+        [SynthesisSettingName("Blacklist keywords")]
+        public List<IFormLinkGetter<IKeywordGetter>> KywdBlacklist { get; set; } = new();
     }
 }
